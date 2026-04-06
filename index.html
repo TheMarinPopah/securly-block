@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Browser</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="nav-bar">
+    <button id="btn-back" title="Back" disabled>&#8592;</button>
+    <button id="btn-forward" title="Forward" disabled>&#8594;</button>
+    <button id="btn-refresh" title="Refresh">&#8635;</button>
+    <input id="url-bar" type="text" value="https://neal.fun"
+      autocapitalize="none" autocorrect="off" spellcheck="false" />
+    <button id="btn-go" title="Go">&#8594;</button>
+    <button id="btn-blocked" title="Unsupported Sites">⚠</button>
+
+    <div id="blocked-panel">
+      <strong>ALWAYS PUT THE URL INTO THE URL BOX IF THE SITE IS BLOCKED!!!</strong>
+      <p style="color: #e67e22; font-weight: 500; font-size: 13px;">⚠ Do not add www to websites as this will cause Securly to block them immediately</p>
+      <p style="color: #e67e22; font-weight: 500; font-size: 13px;">⚠ A simple refresh can remove Securly block if it pops up.</p>
+      <p>These sites block iframes and won't load:</p>
+      <ul>
+        <li>google.com</li>
+        <li>youtube.com</li>
+        <li>facebook.com</li>
+        <li>instagram.com</li>
+        <li>twitter.com / x.com</li>
+        <li>reddit.com</li>
+        <li>microsoft.com</li>
+        <li>tiktok.com</li>
+        <li>netflix.com</li>
+        <li>amazon.com</li>
+        <li>nytimes.com</li>
+        <li>bbc.com</li>
+        <li>github.com</li>
+        <li>discord.com</li>
+        <li>snapchat.com</li>
+      </ul>
+      <p class="note">Sites like neal.fun, Wikipedia, and most small/indie sites work fine.</p>
+    </div>
+
+  </div>
+
+  <iframe id="frame" src="https://neal.fun" 
+  allow="cross-origin-isolated; storage-access">
+</iframe>
+  <script src="script.js"></script>
+</body>
+</html>
