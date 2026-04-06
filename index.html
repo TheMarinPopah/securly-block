@@ -7,6 +7,14 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+  <div id="tab-bar">
+    <div class="tab active" data-tab="0">Tab 1</div>
+    <div class="tab" data-tab="1">Tab 2</div>
+    <div class="tab" data-tab="2">Tab 3</div>
+    <div class="tab" data-tab="3">Tab 4</div>
+  </div>
+
   <div id="nav-bar">
     <button id="btn-back" title="Back" disabled>&#8592;</button>
     <button id="btn-forward" title="Forward" disabled>&#8594;</button>
@@ -40,12 +48,15 @@
       </ul>
       <p class="note">Sites like neal.fun, Wikipedia, and most small/indie sites work fine.</p>
     </div>
-
   </div>
 
-  <iframe id="frame" src="https://neal.fun" 
-  allow="cross-origin-isolated; storage-access">
-</iframe>
+  <div id="frames-container">
+    <iframe class="frame active" id="frame-0" src="https://neal.fun"></iframe>
+    <iframe class="frame" id="frame-1" src=""></iframe>
+    <iframe class="frame" id="frame-2" src=""></iframe>
+    <iframe class="frame" id="frame-3" src=""></iframe>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
