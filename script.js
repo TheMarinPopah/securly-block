@@ -1,165 +1,118 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+const urlBar = document.getElementById('url-bar');
+const btnBack = document.getElementById('btn-back');
+const btnForward = document.getElementById('btn-forward');
+const btnRefresh = document.getElementById('btn-refresh');
+const btnGo = document.getElementById('btn-go');
+const btnBlocked = document.getElementById('btn-blocked');
+const blockedPanel = document.getElementById('blocked-panel');
+const tabs = document.querySelectorAll('.tab');
+const frames = document.querySelectorAll('.frame');
+
+let currentTab = 0;
+
+const tabState = [
+  { history: ['https://neal.fun'], index: 0 },
+  { history: [''], index: 0 },
+  { history: [''], index: 0 },
+  { history: [''], index: 0 },
+];
+
+function getFrame(n) {
+  return document.getElementById('frame-' + n);
 }
 
-#tab-bar {
-  display: flex;
-  background: #e8eaed;
-  border-bottom: 1px solid #ccc;
-  flex-shrink: 0;
+function navigate(url) {
+  if (!url) return;
+  if (!url.startsWith('http')) url = 'https://' + url;
+  const state = tabState[currentTab];
+  state.history = state.history.slice(0, state.index + 1);
+  state.history.push(url);
+  state.index++;
+  getFrame(currentTab).src = url;
+  urlBar.value = url;
+  tabs[currentTab].textContent = new URL(url).hostname;
+  updateButtons();
 }
 
-.tab {
-  flex: 1;
-  text-align: center;
-  padding: 8px 0;
-  font-size: 13px;
-  color: #555;
-  cursor: pointer;
-  border-right: 1px solid #ccc;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 25%;
-  user-select: none;
+function updateButtons() {
+  const state = tabState[currentTab];
+  btnBack.disabled = state.index <= 0;
+  btnForward.disabled = state.index >= state.history.length - 1;
 }
 
-.tab:last-child {
-  border-right: none;
+function switchTab(n) {
+  tabs[currentTab].classList.remove('active');
+  frames[currentTab].classList.remove('active');
+  currentTab = n;
+  tabs[currentTab].classList.add('active');
+  frames[currentTab].classList.add('active');
+  const state = tabState[currentTab];
+  urlBar.value = state.history[state.index] || '';
+  updateButtons();
 }
 
-.tab:hover {
-  background: #d8dadd;
-}
+tabs.forEach((tab, i) => {
+  tab.addEventListener('click', () => switchTab(i));
+});
 
-.tab.active {
-  background: #f1f3f4;
-  color: #1a73e8;
-  font-weight: 500;
-  border-bottom: 2px solid #1a73e8;
-}
+frames.forEach((frame, i) => {
+  frame.addEventListener('load', () => {
+    try {
+      const newUrl = frame.contentWindow.location.href;
+      if (newUrl && newUrl !== 'about:blank') {
+        tabState[i].history[tabState[i].index] = newUrl;
+        if (i === currentTab) {
+          urlBar.value = newUrl;
+          tabs[i].textContent = new URL(newUrl).hostname;
+        }
+      }
+    } catch (e) {}
+  });
+});
 
-#nav-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: #f1f3f4;
-  border-bottom: 1px solid #ddd;
-  flex-shrink: 0;
-  position: relative;
-}
+btnBack.addEventListener('click', () => {
+  const state = tabState[currentTab];
+  if (state.index > 0) {
+    state.index--;
+    const url = state.history[state.index];
+    getFrame(currentTab).src = url;
+    urlBar.value = url;
+    updateButtons();
+  }
+});
 
-#nav-bar button {
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: transparent;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #333;
-  flex-shrink: 0;
-}
+btnForward.addEventListener('click', () => {
+  const state = tabState[currentTab];
+  if (state.index < state.history.length - 1) {
+    state.index++;
+    const url = state.history[state.index];
+    getFrame(currentTab).src = url;
+    urlBar.value = url;
+    updateButtons();
+  }
+});
 
-#nav-bar button:hover {
-  background: #ddd;
-}
+btnRefresh.addEventListener('click', () => {
+  const state = tabState[currentTab];
+  const url = state.history[state.index];
+  if (url) {
+    getFrame(currentTab).src = '';
+    setTimeout(() => { getFrame(currentTab).src = url; }, 50);
+  }
+});
 
-#nav-bar button:disabled {
-  color: #bbb;
-  cursor: default;
-}
+btnGo.addEventListener('click', () => navigate(urlBar.value));
 
-#nav-bar button:disabled:hover {
-  background: transparent;
-}
+urlBar.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') navigate(urlBar.value);
+});
 
-#url-bar {
-  flex: 1;
-  height: 36px;
-  border: 1px solid #ccc;
-  border-radius: 18px;
-  padding: 0 14px;
-  font-size: 14px;
-  background: white;
-  outline: none;
-  text-transform: none;
-  font-variant: normal;
-}
+btnBlocked.addEventListener('click', () => {
+  blockedPanel.style.display = blockedPanel.style.display === 'block' ? 'none' : 'block';
+});
 
-#url-bar:focus {
-  border-color: #1a73e8;
-}
-
-#btn-blocked {
-  font-size: 18px;
-  border-radius: 50% !important;
-  background: transparent !important;
-  border: none !important;
-}
-
-#btn-blocked:hover {
-  background: #ddd !important;
-}
-
-#blocked-panel {
-  display: none;
-  position: absolute;
-  top: 56px;
-  right: 12px;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 12px 16px;
-  width: 220px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 999;
-  font-size: 14px;
-}
-
-#blocked-panel strong {
-  font-size: 15px;
-}
-
-#blocked-panel ul {
-  margin: 8px 0;
-  padding-left: 18px;
-}
-
-#blocked-panel li {
-  margin: 4px 0;
-  color: #c0392b;
-}
-
-#blocked-panel .note {
-  font-size: 12px;
-  color: #888;
-  margin-top: 8px;
-}
-
-#frames-container {
-  flex: 1;
-  position: relative;
-}
-
-.frame {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: none;
-}
-
-.frame.active {
-  display: block;
-}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#btn-blocked') && !e.target.closest('#blocked-panel')) {
+    blockedPanel.style.display = 'none';
+  }
+});
